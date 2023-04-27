@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { createSpyFromClass, Spy } from 'jasmine-auto-spies';
-import { AnotherService } from './another.service';
-import { Llama } from './llama.model';
+import { LlamaRemoteService } from './llama-remote.service';
+import { Llama } from '../../_types/llama.type';
 import { HttpClient } from '@angular/common/http';
 
-describe('AnotherService', () => {
-  let serviceUnderTest: AnotherService;
+describe('LlamaRemoteService', () => {
+  let serviceUnderTest: LlamaRemoteService;
   let httpSpy: Spy<HttpClient>;
   let fakeLlamas: Llama[];
   let actualResult: any;
@@ -13,12 +13,12 @@ describe('AnotherService', () => {
   Given(() => {
     TestBed.configureTestingModule({
       providers: [
-        AnotherService,
-        {provide: HttpClient, useValue: createSpyFromClass(HttpClient)}
+        LlamaRemoteService,
+        { provide: HttpClient, useValue: createSpyFromClass(HttpClient) }
       ]
     });
 
-    serviceUnderTest = TestBed.get(AnotherService);
+    serviceUnderTest = TestBed.get(LlamaRemoteService);
     httpSpy = TestBed.get(HttpClient);
 
     fakeLlamas = undefined;
@@ -26,21 +26,18 @@ describe('AnotherService', () => {
   });
 
   describe('METHOD: getLlamasFromServer', () => {
-
     When(() => {
-      serviceUnderTest.getLlamasFromServer().subscribe(value => actualResult = value);
+      serviceUnderTest.getLlamasFromServer().subscribe(value => (actualResult = value));
     });
 
     describe('GIVEN a successful request THEN return the llamas', () => {
       Given(() => {
-        fakeLlamas = [{id: 'FAKE ID', name: 'FAKE NAME', imageFileName: 'FAKE IMAGE'}];
+        fakeLlamas = [{ id: 'FAKE ID', name: 'FAKE NAME', imageFileName: 'FAKE IMAGE' }];
         httpSpy.get.and.nextOneTimeWith(fakeLlamas);
-
       });
       Then(() => {
         expect(actualResult).toEqual(fakeLlamas);
       });
     });
-
   });
 });

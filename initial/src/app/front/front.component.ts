@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FrontService } from './front.service';
-import { Llama } from './llama.model';
+import { Llama } from '../_types/llama.type';
 import { RouterAdapterService } from '../_services/router-adapter/router-adapter.service';
 import { appRoutesName } from '../app.routes.names';
 
@@ -29,5 +29,10 @@ export class FrontComponent implements OnInit {
 
   isListVisible(): boolean {
     return !!this.llamas && this.llamas.length > 0;
+  }
+
+  // TODO: handle errors?
+  poke(llama: Llama) {
+    this.frontService.pokeLlama(llama);
   }
 }
