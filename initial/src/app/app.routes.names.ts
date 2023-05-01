@@ -1,3 +1,4 @@
 export const appRoutesName = {
-  LLAMA_PAGE: 'llama'
+  LLAMA_PAGE: 'llama',
+  LOGIN: 'login'
 };

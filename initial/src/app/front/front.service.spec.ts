@@ -3,10 +3,13 @@ import { fakeAsync, TestBed } from '@angular/core/testing';
 import { Llama } from '../_types/llama.type';
 import { LlamaRemoteService } from '../_services/llama-remote/llama-remote.service';
 import { createSpyFromClass, Spy } from 'jasmine-auto-spies';
+import { appRoutesName } from '../app.routes.names';
+import { RouterAdapterService } from '../_services/router-adapter/router-adapter.service';
 
 describe('FrontService', () => {
   let serviceUnderTest: FrontService;
   let llamaRemoteServiceSpy: Spy<LlamaRemoteService>;
+  let routerAdapterServiceSpy: Spy<RouterAdapterService>;
   let fakeLlamas: Llama[];
   let actualResult: any;
 
@@ -14,12 +17,17 @@ describe('FrontService', () => {
     TestBed.configureTestingModule({
       providers: [
         FrontService,
-        { provide: LlamaRemoteService, useValue: createSpyFromClass(LlamaRemoteService) }
+        { provide: LlamaRemoteService, useValue: createSpyFromClass(LlamaRemoteService) },
+        {
+          provide: RouterAdapterService,
+          useValue: createSpyFromClass(RouterAdapterService)
+        }
       ]
     });
 
     serviceUnderTest = TestBed.inject<any>(FrontService);
     llamaRemoteServiceSpy = TestBed.inject<any>(LlamaRemoteService);
+    routerAdapterServiceSpy = TestBed.inject<any>(RouterAdapterService);
 
     fakeLlamas = undefined;
     actualResult = undefined;
@@ -47,48 +55,62 @@ describe('FrontService', () => {
     let fakeLlama: Llama;
 
     // Mutual code start
-    Given(() => {
-      serviceUnderTest.userLlama = createDefaultFakeLlama();
-      fakeUserLlamaId = 'FAKE USER LLAMA ID';
-      serviceUnderTest.userLlama.id = fakeUserLlamaId;
-    });
-
     When(() => {
       serviceUnderTest.pokeLlama(fakeLlama);
     });
     // Mutual code end
 
-    describe('GIVEN llama with an empty pokedBy list THEN add user llama to the list', () => {
+    describe('GIVEN user llama is empty THEN redirect to login', () => {
       Given(() => {
-        fakeLlama = createDefaultFakeLlama();
-        fakeLlama.pokedByTheseLlamas = [];
+        serviceUnderTest.userLlama = null;
       });
 
       Then(() => {
-        const expectedChanges: Partial<Llama> = {
-          pokedByTheseLlamas: [fakeUserLlamaId]
-        };
-        expect(llamaRemoteServiceSpy.update).toHaveBeenCalledWith(
-          fakeLlama.id,
-          expectedChanges
+        expect(routerAdapterServiceSpy.goToUrl).toHaveBeenCalledWith(
+          `/${appRoutesName.LOGIN}`
         );
       });
     });
 
-    describe('GIVEN llama with a filled pokedBy list THEN add user llama to the list', () => {
+    describe('GIVEN user llama  exists', () => {
       Given(() => {
-        fakeLlama = createDefaultFakeLlama();
-        fakeLlama.pokedByTheseLlamas = ['ANOTHER FAKE ID'];
+        serviceUnderTest.userLlama = createDefaultFakeLlama();
+        fakeUserLlamaId = 'FAKE USER LLAMA ID';
+        serviceUnderTest.userLlama.id = fakeUserLlamaId;
       });
 
-      Then(() => {
-        const expectedChanges: Partial<Llama> = {
-          pokedByTheseLlamas: ['ANOTHER FAKE ID', fakeUserLlamaId]
-        };
-        expect(llamaRemoteServiceSpy.update).toHaveBeenCalledWith(
-          fakeLlama.id,
-          expectedChanges
-        );
+      describe('GIVEN llama with an empty pokedBy list THEN add user llama to the list', () => {
+        Given(() => {
+          fakeLlama = createDefaultFakeLlama();
+          fakeLlama.pokedByTheseLlamas = [];
+        });
+
+        Then(() => {
+          const expectedChanges: Partial<Llama> = {
+            pokedByTheseLlamas: [fakeUserLlamaId]
+          };
+          expect(llamaRemoteServiceSpy.update).toHaveBeenCalledWith(
+            fakeLlama.id,
+            expectedChanges
+          );
+        });
+      });
+
+      describe('GIVEN llama with a filled pokedBy list THEN add user llama to the list', () => {
+        Given(() => {
+          fakeLlama = createDefaultFakeLlama();
+          fakeLlama.pokedByTheseLlamas = ['ANOTHER FAKE ID'];
+        });
+
+        Then(() => {
+          const expectedChanges: Partial<Llama> = {
+            pokedByTheseLlamas: ['ANOTHER FAKE ID', fakeUserLlamaId]
+          };
+          expect(llamaRemoteServiceSpy.update).toHaveBeenCalledWith(
+            fakeLlama.id,
+            expectedChanges
+          );
+        });
       });
     });
   });
