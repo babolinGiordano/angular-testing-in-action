@@ -3,8 +3,8 @@ import { fakeAsync, TestBed } from '@angular/core/testing';
 import { Llama } from '../_types/llama.type';
 import { LlamaRemoteService } from '../_services/llama-remote/llama-remote.service';
 import { createSpyFromClass, Spy } from 'jasmine-auto-spies';
-import { appRoutesName } from '../app.routes.names';
-import { RouterAdapterService } from '../_services/router-adapter/router-adapter.service';
+import { appRoutesNames } from '../app.routes.names';
+import { RouterAdapterService } from '../_services/adapters/router-adapter/router-adapter.service';
 
 describe('FrontService', () => {
   let serviceUnderTest: FrontService;
@@ -67,7 +67,7 @@ describe('FrontService', () => {
 
       Then(() => {
         expect(routerAdapterServiceSpy.goToUrl).toHaveBeenCalledWith(
-          `/${appRoutesName.LOGIN}`
+          `/${appRoutesNames.LOGIN}`
         );
       });
     });

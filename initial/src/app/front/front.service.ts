@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Llama } from '../_types/llama.type';
 import { LlamaRemoteService } from '../_services/llama-remote/llama-remote.service';
-import { RouterAdapterService } from '../_services/router-adapter/router-adapter.service';
-import { appRoutesName } from '../app.routes.names';
+import { RouterAdapterService } from '../_services/adapters/router-adapter/router-adapter.service';
+import { appRoutesNames } from '../app.routes.names';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class FrontService {
 
   constructor(
     private llamaRemoteService: LlamaRemoteService,
-    private routerAdaperService: RouterAdapterService
+    private routerAdapterService: RouterAdapterService
   ) {}
 
   getFeaturedLlamas(config?: any): Promise<Llama[]> {
@@ -22,7 +22,7 @@ export class FrontService {
   // TODO: handle errors
   pokeLlama(llama: Llama) {
     if (!this.userLlama) {
-      this.routerAdaperService.goToUrl(`/${appRoutesName.LOGIN}`);
+      this.routerAdapterService.goToUrl(`/${appRoutesNames.LOGIN}`);
       return;
     }
     const userLlamaId = this.userLlama.id;
